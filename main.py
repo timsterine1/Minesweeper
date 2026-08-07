@@ -1,5 +1,6 @@
 import os
 os.system("clear")
+import random
 
 class Block:
     def __init__(self):
@@ -36,6 +37,7 @@ class Block:
         return 0
 
 
+
 def get_int_input(prompt):
     while True:
         try:
@@ -46,9 +48,18 @@ def get_int_input(prompt):
 def main():
         area_leng = get_int_input("how large should the grid be? ")
         number_of_bombs = get_int_input("how many bombs do you want? ")
-
+   
         grid = [[Block() for _ in range(area_leng)] for _ in range(area_leng)]
-
+        
+        def place_bombs():
+            count = 1
+            while count <= number_of_bombs:
+                random_x = random.randint(0,area_leng-1)
+                random_y = random.randint(0,area_leng-1)
+                if grid[random_x][random_y].is_bomb == False:
+                     grid[random_x][random_y].is_bomb = True
+                     count += 1
+        place_bombs()
         for index in grid:
                 print([block.show() for block in index])
 
