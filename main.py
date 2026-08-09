@@ -10,29 +10,23 @@ class Block:
         self.is_bomb = False
         self.neighbour_mine_number = 0
         
-
-    #nicht zeichnen sondern nur die zahl wiedergeben die gezeichnet werden soll
     def show(self)-> int: 
         # wenn flag mode aktiviert ist int x y pos eingegeben wird dan 
-        if self.is_flaged == True:
-            # dan wird das zeichenwas ausgegeben wird auf 9 gesetzt 
-            return 9
-        elif self.is_bomb == False:
-            # dan wird das was ausgegeben wird mit einer function calculated
-            # berechnet und ausgegeben 
-            return self.neighbour_mine_number
-            
-        else: 
-             # dann ist es eine bombe und game over 
-             return -1
+        if self.is_revealed == True:
+            if self.is_flaged == True:
+                return 9
+            elif self.is_bomb == False:
+                return self.return_emoji_number()
+            else: 
+                return "💣"
+        return "⬛️"
+
+    def return_emoji_number(self):
+        number_emojis = ["0️⃣ ","1️⃣ ", "2️⃣ ", "3️⃣ ", "4️⃣ ", "5️⃣ ", "6️⃣ ", "7️⃣ ", "8️⃣ "]
+        return number_emojis[self.neighbour_mine_number]
 
     
-    def get_neighbour_number(self,grid,xpos,ypos,area_leng)-> int:
-        #es wird geguckt wieviele bombem im umkreis sind 
-        #ein loop feur den 3x3 kasten
-        #vll mit -2 anfangen fuer x und y weil beim ersten durchkauf
-        #ist es dan -1 dan 0 und dan 1feur x und zusammen mit y
-        # ist es dan ein 3er grid wenn eine bombe da ist den zaheler um 1 hoch am edne wiedergeben
+    def get_neighbour_number(self,grid,xpos,ypos,area_leng)-> None:
         count = 0 
         if grid[xpos][ypos].is_bomb == True:
             return -1
@@ -47,12 +41,6 @@ class Block:
 
         self.neighbour_mine_number = count
         
-
-                  
-        return 0
-
-
-
 def get_int_input(prompt):
     while True:
         try:
@@ -78,7 +66,32 @@ def main():
         for i in range(area_leng):
              for j in range(area_leng):
                 grid[i][j].get_neighbour_number(grid,i,j,area_leng) 
-        for index in grid:
-                print([block.show() for block in index])
+        winning_count = 0
+        while True:
+            for index in grid:
+                print(*[block.show() for block in index], sep="")
 
+            pos_is_possible = False
+            while pos_is_possible == False:
+                selectx = get_int_input("welche x pos")
+                selecty = get_int_input("welche y pos")
+                if (selectx >= 0 and selectx < area_leng
+                    and selecty >=0 and selecty< area_leng):
+                    pos_is_possible = True 
+                else:
+                    print("please enter a valid point")
+            if grid[selecty][selectx].is_revealed == False:
+                winning_count += 1
+            grid[selecty][selectx].is_revealed = True
+            pos_is_possible = False
+            if grid[selecty][selectx].is_bomb == True:
+                os.system('clear')
+                print("du bist tot")
+                break
+            if winning_count >= (area_leng * area_leng) - number_of_bombs:
+                os.system('clear')
+                print("Du hast Gewonnen!")
+                break
+            else:
+                os.system('clear')
 main()
